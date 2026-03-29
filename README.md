@@ -389,3 +389,7 @@ MIT License - See LICENSE file for details
 ## GitHub Repository
 
 https://github.com/bdmurphy73/BDGTrans
+
+## Privacy & Terms of Service
+
+[Privacy_TermsOfService.txt](https://github.com/bdmurphy73/BDGTrans/blob/master/Privacy_TermsOfService.txt)
