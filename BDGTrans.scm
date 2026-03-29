@@ -27,6 +27,26 @@
       (display "\"\n}" fd)
       (close-output-port fd))))
 
+(define (bdgtrans-get-prompt-file)
+  (let ((script-dir (car (gimp-directory))))
+    (string-append script-dir "/BDGTrans-prompt.txt")))
+
+(define (bdgtrans-load-prompt target-lang)
+  (let ((prompt-file (bdgtrans-get-prompt-file)))
+    (if (file-exists? prompt-file)
+        (let* ((fd (car (file-open prompt-file "r")))
+               (prompt-tpl ""))
+          (while (not (eof fd))
+            (set! prompt-tpl (string-append prompt-tpl (car (read-line fd)) "\n")))
+          (close-input-port fd)
+          (string-append prompt-tpl "\nTranslate the following English text to " target-lang ":\n\n"))
+        (begin
+          (string-append 
+           "You are a professional translator. Translate the following English text to " 
+           target-lang 
+           ". Preserve the intent and meaning of the message rather than doing a literal word-for-word translation. "
+           "Output ONLY the translated text, nothing else.\n\nText: ")))))
+
 (define (bdgtrans-test-connection server model)
   (let* ((cmd (string-append "curl -s -X POST " server "/api/generate "
                              "-d '{\"model\": \"" model "\", "
@@ -36,12 +56,8 @@
     (if (= result 0) #t #f)))
 
 (define (bdgtrans-translate-text text target-lang server model)
-  (let* ((prompt (string-append 
-                   "You are a professional translator. Translate the following English text to " 
-                   target-lang 
-                   ". Preserve the intent and meaning of the message rather than doing a literal word-for-word translation. "
-                   "Output ONLY the translated text, nothing else.\n\nText: " 
-                   text))
+  (let* ((prompt-tpl (bdgtrans-load-prompt target-lang))
+         (prompt (string-append prompt-tpl text))
          (escaped-prompt (string-replace prompt "'" "'\\''"))
          (cmd (string-append "curl -s -X POST " server "/api/generate "
                             "-d '{\"model\": \"" model "\", "
@@ -101,52 +117,6 @@
       (gimp-item-set-visible new-layer TRUE)
       (gimp-displays-flush))))
 
-(define (bdgtrans-translate-dialog image layer)
-  (let* ((config (bdgtrans-get-config))
-         (server (cdr (assoc "server" config)))
-         (model (cdr (assoc "model" config)))
-         (langs '("Spanish" "German" "Russian" "French" "Chinese"))
-         (result (gimp-combo-box-entry-new-text 0))
-         (temp-image (car (gimp-image-new 100 100 RGB)))
-         (text-var ""))
-    
-    (define (run-dialog)
-      (let ((dialog (car (gimp-dialog-new "BDGTrans - Translate Text" "bdgtrans" 
-                                           (quote 0) (quote 0) 1
-                                           (list "server" "http://localhost:11434")
-                                           (list "model" "llama3")
-                                           (list "Spanish" "German" "Russian" "French" "Chinese")
-                                           (list "OK" "Cancel")))))
-        (gimp-widget-show dialog)
-        dialog))
-    
-    (gimp-message "Please use Filters > BDGTrans > Translate Text to translate")))
-
-(script-fu-register
- "bdgtrans-translate"
- "Translate Text (BDGTrans)"
- "Translates a text layer using a local AI model"
- "BDGTrans"
- "Copyright 2024"
- "2024"
- "RGB*, GRAY*"
- SF-IMAGE      "Image" 0
- SF-DRAWABLE   "Layer" 0
- SF-OPTION     "Target Language" '("Spanish" "German" "Russian" "French" "Chinese"))
-
-(script-fu-menu-register "bdgtrans-translate" "<Image>/Filters/BDGTrans")
-
-(script-fu-register
- "bdgtrans-configure"
- "Configure BDGTrans"
- "Configure the AI server and model settings"
- "BDGTrans"
- "Copyright 2024"
- "2024"
- "")
-
-(script-fu-menu-register "bdgtrans-configure" "<Image>/Filters/BDGTrans")
-
 (define (bdgtrans-run-config)
   (let* ((config (bdgtrans-get-config))
          (server (cdr (assoc "server" config)))
@@ -168,5 +138,51 @@
           (gimp-message "BDGTrans configured successfully!"))
         (gimp-message "Could not connect to AI server. Please check settings."))))
 
+(define (bdgtrans-show-config)
+  (let* ((config (bdgtrans-get-config))
+         (server (cdr (assoc "server" config)))
+         (model (cdr (assoc "model" config)))
+         (msg (string-append "BDGTrans Configuration\n\n"
+                            "Server: " server "\n"
+                            "Model: " model "\n\n"
+                            "Config file: " (gimp-directory) "/BTGTrans.json")))
+    (gimp-message msg)))
+
 (define (gimp-input-dialog title prompt default)
   (list default))
+
+(script-fu-register
+ "bdgtrans-translate"
+ "Translate Text (BDGTrans)"
+ "Translates a text layer using a local AI model"
+ "BDMurphy"
+ "Copyright 2024"
+ "2024"
+ "RGB*, GRAY*"
+ SF-IMAGE      "Image" 0
+ SF-DRAWABLE   "Layer" 0
+ SF-OPTION     "Target Language" '("Spanish" "German" "Russian" "French" "Chinese"))
+
+(script-fu-menu-register "bdgtrans-translate" "<Image>/Filters/BDGTrans")
+
+(script-fu-register
+ "bdgtrans-configure"
+ "Configure BDGTrans"
+ "Configure the AI server and model settings"
+ "BDMurphy"
+ "Copyright 2024"
+ "2024"
+ "")
+
+(script-fu-menu-register "bdgtrans-configure" "<Image>/Filters/BDGTrans")
+
+(script-fu-register
+ "bdgtrans-show-config"
+ "Show BDGTrans Settings"
+ "Display current configuration settings"
+ "BDMurphy"
+ "Copyright 2024"
+ "2024"
+ "")
+
+(script-fu-menu-register "bdgtrans-show-config" "<Image>/Filters/BDGTrans")
