@@ -5,21 +5,24 @@ SCRIPT_FU="BDGTrans.scm"
 PYTHON_FU="bdgtrans.py"
 PROMPT_FILE="BDGTrans-prompt.txt"
 
-GIMP_VERSION="3.0"
+GIMP_VERSION="3.2"
 
-# Detect OS and set plugin directory
+# Detect OS and set plugin/script directory
 case "$(uname -s)" in
     Linux*)
-        PLUGIN_DIR="$HOME/.config/gimp/{}/plug-ins".format(GIMP_VERSION)
+        PLUGIN_DIR="$HOME/.config/gimp/$GIMP_VERSION/plug-ins"
+        SCRIPT_DIR="$HOME/.config/gimp/$GIMP_VERSION/scripts"
         CONFIG_DIR="$HOME/.config/gimp"
         ;;
     Darwin*)
-        PLUGIN_DIR="$HOME/Library/Application Support/GIMP/{}/plug-ins".format(GIMP_VERSION)
+        PLUGIN_DIR="$HOME/Library/Application Support/GIMP/$GIMP_VERSION/plug-ins"
+        SCRIPT_DIR="$HOME/Library/Application Support/GIMP/$GIMP_VERSION/scripts"
         CONFIG_DIR="$HOME/Library/Application Support/GIMP"
         ;;
     CYGWIN*|MINGW*|MSYS*)
-        PLUGIN_DIR="$APPDATA/GIMP/{}/plug-ins".format(GIMP_VERSION)
-        CONFIG_DIR="$APPDATA/GIMP"
+        PLUGIN_DIR="$APPDATA/GIMP/$GIMP_VERSION/plug-ins"
+        SCRIPT_DIR="$APPDATA/GIMP/$GIMP_VERSION/scripts"
+        CONFIG_DIR="$APPDATA/GIMP/$GIMP_VERSION"
         ;;
     *)
         echo "Unknown operating system"
@@ -27,25 +30,24 @@ case "$(uname -s)" in
         ;;
 esac
 
-# Expand the path properly for Linux
-PLUGIN_DIR=$(eval echo $PLUGIN_DIR)
-CONFIG_DIR=$(eval echo $CONFIG_DIR)
+echo "Installing BDGTrans for GIMP $GIMP_VERSION..."
+echo "Python-Fu plug-ins: $PLUGIN_DIR"
+echo "Script-Fu scripts: $SCRIPT_DIR"
 
-echo "Installing BDGTrans for GIMP 3.x..."
-echo "Plugin directory: $PLUGIN_DIR"
-
-# Create directory if it doesn't exist
+# Create directories if they don't exist
 mkdir -p "$PLUGIN_DIR"
+mkdir -p "$SCRIPT_DIR"
 mkdir -p "$CONFIG_DIR"
 
-# Copy plugin files
-cp "$SCRIPT_FU" "$PLUGIN_DIR/"
+# Copy Python-Fu plugin
 cp "$PYTHON_FU" "$PLUGIN_DIR/"
-cp "$PROMPT_FILE" "$CONFIG_DIR/"
-
 chmod +x "$PLUGIN_DIR/$PYTHON_FU"
 
-echo "BDGTrans installed successfully to: $PLUGIN_DIR"
+# Copy Script-Fu script and prompt file
+cp "$SCRIPT_FU" "$SCRIPT_DIR/"
+cp "$PROMPT_FILE" "$SCRIPT_DIR/"
+
+echo "BDGTrans installed successfully!"
 echo "Please restart GIMP to use the plugin."
 
 # Create default config if it doesn't exist

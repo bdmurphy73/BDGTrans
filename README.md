@@ -38,32 +38,47 @@ BDGTrans is a GIMP 3.x plugin (both Python-Fu and Script-Fu) that translates tex
 
 #### Linux
 
-1. Copy the plugin files to your GIMP plug-ins directory:
+1. Copy the Python-Fu plugin to your GIMP plug-ins directory:
    ```bash
-   cp bdgtrans.py BDGTrans.scm BDGTrans-prompt.txt ~/.config/gimp/3.0/plug-ins/
-   chmod +x ~/.config/gimp/3.0/plug-ins/bdgtrans.py
+   cp bdgtrans.py ~/.config/gimp/3.2/plug-ins/
+   chmod +x ~/.config/gimp/3.2/plug-ins/bdgtrans.py
    ```
 
-2. Restart GIMP
+2. Copy the Script-Fu script and prompt file to your GIMP scripts directory:
+   ```bash
+   cp BDGTrans.scm BDGTrans-prompt.txt ~/.config/gimp/3.2/scripts/
+   ```
+
+3. Restart GIMP
 
 #### Windows
 
-1. Copy the plugin files to your GIMP plug-ins directory:
+1. Copy the Python-Fu plugin to your GIMP plug-ins directory:
    ```
-   C:\Users\<username>\.config\gimp\3.0\plug-ins\
+   C:\Users\<username>\AppData\Roaming\GIMP\3.2\plug-ins\
    ```
 
-2. Restart GIMP
+2. Copy the Script-Fu script and prompt file to your GIMP scripts directory:
+   ```
+   C:\Users\<username>\AppData\Roaming\GIMP\3.2\scripts\
+   ```
+
+3. Restart GIMP
 
 #### macOS
 
-1. Copy the plugin files to your GIMP plug-ins directory:
+1. Copy the Python-Fu plugin to your GIMP plug-ins directory:
    ```bash
-   cp bdgtrans.py BDGTrans.scm BDGTrans-prompt.txt ~/Library/Application\ Support/GIMP/3.0/plug-ins/
-   chmod +x ~/Library/Application\ Support/GIMP/3.0/plug-ins/bdgtrans.py
+   cp bdgtrans.py ~/Library/Application\ Support/GIMP/3.2/plug-ins/
+   chmod +x ~/Library/Application\ Support/GIMP/3.2/plug-ins/bdgtrans.py
    ```
 
-2. Restart GIMP
+2. Copy the Script-Fu script and prompt file to your GIMP scripts directory:
+   ```bash
+   cp BDGTrans.scm BDGTrans-prompt.txt ~/Library/Application\ Support/GIMP/3.2/scripts/
+   ```
+
+3. Restart GIMP
 
 Or simply run the installation script:
 ```bash
@@ -73,7 +88,7 @@ chmod +x install.sh
 
 ### Configuration
 
-The plugin stores its configuration in `~/.config/gimp/BTGTrans.json` (Linux/macOS) or `%APPDATA%\GIMP\BTGTrans.json` (Windows).
+The plugin stores its configuration in `~/.config/gimp/BTGTrans.json` (Linux/macOS) or `%APPDATA%\GIMP\3.2\BTGTrans.json` (Windows).
 
 Default configuration:
 ```json
